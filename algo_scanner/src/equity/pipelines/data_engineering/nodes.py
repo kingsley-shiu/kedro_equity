@@ -95,7 +95,6 @@ def get_nasdaq_company_info(df_tickers: pd.DataFrame,
             list_info.append(None)
 
     for i in df_tickers.index.to_list():
-        print(i)
         append_info(i)
 
     with tqdm(total=len(df_tickers)) as pbar:
