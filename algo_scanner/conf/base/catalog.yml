@@ -11,3 +11,8 @@ nasdaq_symbol:
 nasdaq_daily_price:
   type:  pandas.ParquetDataSet
   filepath: data/01_raw/nasdaq_daliy_price.parquet
+
+nasdaq_company_info:
+  type:  pandas.ParquetDataSet
+  filepath: data/01_raw/nasdaq_company_info.parquet
+

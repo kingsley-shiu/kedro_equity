@@ -26,5 +26,14 @@ def create_pipeline(**kwargs):
                 name="nasdaq_daily_price",
                 tags="gen"
             ),
+            node(
+                func=nodes.get_nasdaq_company_info,
+                inputs="nasdaq_symbol",
+                outputs="nasdaq_company_info",
+                name="nasdaq_company_info",
+                tags="gen"
+            ),
+            
+            
         ]
     )
