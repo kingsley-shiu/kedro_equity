@@ -1,35 +1,14 @@
 #%%
+from urllib.request import Request, urlopen
 
-# Import the necessary libraries ------> requests
-import requests
-from urllib.request import urlopen, Request
-
-# Import the necessary libraries ------> BeautifulSoup
-from bs4 import BeautifulSoup
-
-# Import the necessary libraries ------> Pandas,numpy,matplotlib
-import pandas as pd
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-# Import the necessary libraries ------> nltk Module, sentiment analyser nltk vader
 import nltk
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-
-# Import the necessary libraries ------> sentiment analyser textblob
-# from textblob import TextBlob
-# from textblob import Word
-
-# Import the necessary libraries ------> basic aricle summarization
+import pandas as pd
+from bs4 import BeautifulSoup
 from newspaper import Article
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from tqdm.notebook import tqdm
 from yahoo_fin import news
 
-# Import the necessary libraries ------> Deep Learning Summarization
-# from transformers import PegasusTokenizer, PegasusForConditionalGeneration
-# Import the necessary libraries ------> sentiment analyser Pegasus
-# from transformers import pipeline
-
-from tqdm.notebook import tqdm
 tqdm.pandas()
 
 #%%
@@ -136,8 +115,9 @@ def get_sentiment_score(text, type='compound'):
 def get_yf_news(ticker):
     return pd.DataFrame(news.get_yf_rss(ticker))['summary']
 
+
 # %%
-soup = finviz_parser_data("EH")
+soup = finviz_parser_data("O")
 df = finviz_create_write_data(soup)
 
 #%%
@@ -148,7 +128,7 @@ df = df[df['sentiment_score_headline'] != 0]
 df['sentiment_score_details'] = df.progress_apply(lambda x: get_sentiment_score(get_url_artical(x['URL'])), axis=1)
 
 #%%
-news_list = get_yf_news('AAPL')
+news_list = get_yf_news('O')
 
 news_list.apply(lambda x: get_sentiment_score(x)).mean()
 

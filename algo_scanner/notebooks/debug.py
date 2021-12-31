@@ -1,7 +1,9 @@
 # %%
 # SETUP SESSION
+import pandas as pd
 from os import add_dll_directory
 from pathlib import Path
+from dynaconf.default_settings import get
 
 from kedro.framework.cli.utils import _add_src_to_path
 from kedro.framework.project import configure_project
@@ -18,43 +20,69 @@ session = KedroSession.create(metadata.package_name, project_path)
 _activate_session(session)
 context = session.load_context()
 # %%
-df = context.io.load('nasdaq_company_info')
-df.dropna(how='all')
+df_tickers = context.io.load('nasdaq_share_held')
 
+
+#%%
+from yahoo_fin import stock_info as si
+
+list_holding = []
+
+
+def append_holding(ticker):
+    df_share_held = si.get_holders(ticker)['Major Holders'].dropna()
+    if not df_share_held.empty:
+        df_share_held = df_share_held.set_index(1).T
+        df_share_held['ticker'] = ticker
+        list_holding.append(df_share_held)
+    else:
+        list_holding.append(None)
 
 # %%
-df.to_clipboard()
-# %%
-import yfinance as yf
-import pandas as pd
-ticker = 'IOO'
-df = (pd
-      .DataFrame(yf.Ticker(ticker)
-                 .get_info()
-                 .items())
-      .set_index(0)
-      .T)
+import multitasking
+from tqdm import tqdm
 
-col = ['symbol',
-       'quoteType',
-       'shortName',
-       'longBusinessSummary',
-       'website',
-       'exchange',
-       'country',
-       'financialCurrency',
-       'sector',
-       'industry',
-       'recommendationMean',
-       'isEsgPopulated',
-       'fundFamily',
-       'sectorWeightings',
-       'holdings',
-       'bondHoldings',
-       'bondRatings',
-       'equityHoldings',
-       'stockPosition',
-       ]
+list_holding = []
+df_tickers = df_tickers.head(10)
 
-df = df[[c for c in df.columns if c in col]]
+tgt_return = ['% of Shares Held by All Insider',
+              '% of Shares Held by Institutions',
+              '% of Float Held by Institutions',
+              'Number of Institutions Holding Shares']
 
+@multitasking.task
+def append_holding(ticker):
+    try:
+        df_share_held = si.get_holders(ticker)['Major Holders'].dropna()
+        if not df_share_held.empty & (df_share_held[1].to_list() == tgt_return):
+            df_share_held = df_share_held.set_index(1).T
+            df_share_held['ticker'] = ticker
+            list_holding.append(df_share_held)
+        else:
+            list_holding.append(None)
+    except:
+        list_holding.append(None)
+
+for i in df_tickers.index.to_list():
+    append_holding(i)
+
+with tqdm(total=len(df_tickers)) as pbar:
+    while len(list_holding) < len(df_tickers):
+        cur_perc = len(list_holding)
+        pbar.update(cur_perc - pbar.n)
+        if len(list_holding) >= len(df_tickers):
+            break
+
+#%%
+list_holding[5]
+
+#%%
+
+si.get_holders('TSLA')['Major Holders'][1].to_list() == ['Previous Close',
+                                                        'Open',
+                                                        'Bid',
+                                                        'Ask',
+                                                        "Day's Range",
+                                                        '52 Week Range',
+                                                        'Volume',
+                                                        'Avg. Volume']
