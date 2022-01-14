@@ -23,3 +23,7 @@ nasdaq_company_info_loaded:
 nasdaq_share_held:
   type:  pandas.ParquetDataSet
   filepath: data/01_raw/nasdaq_share_held.parquet
+
+nasdaq_share_held_loaded:
+  type:  equity.extras.datasets.tryload_pandas_parquet_dataset.tryload_pandas_parquet
+  filepath: data/01_raw/nasdaq_share_held.parquet

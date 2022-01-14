@@ -105,7 +105,13 @@ def get_nasdaq_company_info(df_tickers: pd.DataFrame,
     return pd.concat(list_info + [df_info_loaded]).dropna(how='all')
 
 
-def get_nasdaq_share_held(df_tickers: pd.DataFrame) -> pd.DataFrame:
+def get_nasdaq_share_held(df_tickers: pd.DataFrame,
+                          df_share_held_loaded: pd.DataFrame) -> pd.DataFrame:
+
+    if df_share_held_loaded is not None:
+        if ~df_share_held_loaded.empty:
+            df_tickers = df_tickers[~df_tickers.index.isin(df_share_held_loaded['ticker'])]
+
     list_holding = []
 
     tgt_return = ['% of Shares Held by All Insider',

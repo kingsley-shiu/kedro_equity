@@ -35,11 +35,10 @@ def create_pipeline(**kwargs):
             ),
             node(
                 func=nodes.get_nasdaq_share_held,
-                inputs=["nasdaq_symbol"],
+                inputs=["nasdaq_symbol", "nasdaq_share_held_loaded"],
                 outputs="nasdaq_share_held",
                 name="nasdaq_share_held",
                 tags="gen"
             ),
-
         ]
     )

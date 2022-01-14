@@ -20,8 +20,11 @@ session = KedroSession.create(metadata.package_name, project_path)
 _activate_session(session)
 context = session.load_context()
 # %%
-df_tickers = context.io.load('nasdaq_share_held')
+df_share = context.io.load('nasdaq_share_held')
 
+
+#%%
+df_share.sort_values(by='Number of Institutions Holding Shares').to_clipboard()
 
 #%%
 from yahoo_fin import stock_info as si
