@@ -1,9 +1,10 @@
 # %%
 import numpy as np
 import pandas as pd
-import scipy
-from scipy import signal
 import pandas_ta
+import scipy
+import talib
+from scipy import signal
 
 # %%
 
