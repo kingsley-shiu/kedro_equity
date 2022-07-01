@@ -20,9 +20,10 @@ session = KedroSession.create(metadata.package_name, project_path)
 _activate_session(session)
 context = session.load_context()
 # %%
-df_share = context.io.load('nasdaq_share_held')
+df_share = context.io.load('nasdaq_daily_price')
 
-
+#%%
+df_share[df_share['ticker'] == 'TSLA']
 #%%
 df_share.sort_values(by='Number of Institutions Holding Shares').to_clipboard()
 
